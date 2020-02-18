@@ -1,7 +1,8 @@
 <template>
-  <div class="singer">
+<div>
+  <div class="singer" v-show="show">
     <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-      <div class="box" v-for="(item,index) in singerList_con" :key="index" @click="selectSinger">
+      <div class="box" v-for="(item,index) in singerList_con" :key="index" @click="selectSinger(item)">
         <div class="title">
           <i>{{index+1}}</i>
         </div>
@@ -25,16 +26,17 @@
         </div>
       </div>
     </van-list>
-
-   
-      <router-view class="son"></router-view>
+</div>
+   <transition name="slide"> 
+      <router-view></router-view>
+   </transition>
   
   </div>
 </template>
 
 <script>
 import { get_singerList, createSinger } from "../../api/singer";
-import { mapMutations } from "vuex";
+import { mapMutations,mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -46,6 +48,13 @@ export default {
       finished: false
     };
   },
+
+  computed:{
+    ...mapGetters([
+        "show"
+      ])
+  },
+
   methods: {
     _get_singerList() {
       get_singerList().then(singerData => {
@@ -88,9 +97,11 @@ export default {
         path: `/singer/${singer.id}`
       });
       this.setSinger(singer);
+      this.setShow()
     },
     ...mapMutations({
-      setSinger: "SET_SINGER"
+      setSinger: "SET_SINGER",
+      setShow:"SET_SHOW"
     })
   },
   created() {
@@ -153,18 +164,10 @@ export default {
   transition: all 0.3s;
 }
 
-.slide-enter-to, .slide-leave {
+.slide-enter, .slide-leave-to {
 
   transform: translate3d(100%, 0, 0);
 }
-.son {
-  position: absolute;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: $color-background;
-}
+
 
 </style>

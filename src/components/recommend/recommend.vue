@@ -12,7 +12,12 @@
       <div class="recommend-list">
         <h1 class="list-title">热门流行歌单推荐</h1>
         <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-          <div v-for="(items,index) of songslist" :key="index" class="item" @click="tt(items.id)">
+          <div
+            v-for="(items,index) of songslist"
+            :key="index"
+            class="item"
+            @click="selectDisc(items)"
+          >
             <div class="icon">
               <van-image width="70" height="70" fit="cover" lazy-load :src="items.sm_src" />
             </div>
@@ -24,9 +29,9 @@
         </van-list>
       </div>
 
-      <!-- <transition name="slide">
-      <router-view class="long"></router-view>
-      </transition>-->
+      <transition name="slide">
+        <router-view></router-view>
+      </transition>
     </div>
   </div>
 </template>
@@ -38,6 +43,7 @@ import {
   getREC_banners,
   getREC_SongList
 } from "../../api/recommend";
+import { mapMutations, mapGetters } from "vuex";
 export default {
   data() {
     return {
@@ -83,7 +89,18 @@ export default {
           this.finished = true;
         }
       }, 1000);
-    }
+    },
+    selectDisc(disc) {
+      this.$router.push({
+        path: `/recommend/'${disc.id}`
+      });
+      this.setDisc(disc);
+      this.setShow();
+    },
+    ...mapMutations({
+      setDisc: "SET_DISC",
+      setShow: "SET_SHOW"
+    })
   },
   created() {
     this._getREC_banners();
@@ -102,7 +119,8 @@ export default {
 }
 
 .recommend {
-  background-color $color-background-d
+  background-color: $color-background-d;
+
   .recommend-list {
     .list-title {
       height: 65px;

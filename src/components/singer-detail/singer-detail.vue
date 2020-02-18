@@ -23,9 +23,11 @@ export default {
       return this.singer.name;
     },
     bgImage() {
-      return this.singer.bg_src;
+      return this.singer.avatar;
     },
-    ...mapGetters(["singer", "show"])
+       ...mapGetters([
+        'singer',
+      ])
   },
   methods: {
     _getSingerDetail() {
@@ -33,11 +35,10 @@ export default {
         this.$router.push("/singer");
       } else {
         getSingerDetail(this.singer.id).then(res => {
-          console.log(res);
-          
           for (var tt of this._normalizeSong(res.hotSongs)) {
             this.hotSongs.push(tt);
-          }
+          };
+          
         });
       }
     },

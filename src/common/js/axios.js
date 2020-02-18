@@ -48,11 +48,37 @@ export function getSOG_list(id) {
   })
 }
 
+// 查询url
+export function getSOG_url(id) {
+  return new Promise((resolve, reject) => {
+    axios.get('/song/url', { params: { id: id } }).then(res => {
+      resolve(res.data);
+    })
+  })
+}
 // 获得所有排行榜
 
 export function getRANK_list() {
   return new Promise((resolve, reject) => {
     axios.get('/toplist').then(res => {
+      resolve(res.data);
+    })
+  })
+}
+
+// 获得歌词
+export function getSOG_lyric(id) {
+  return new Promise((resolve, reject) => {
+    axios.get('/lyric', { params: { id: id } }).then(res => {
+      resolve(res.data);
+    })
+  })
+}
+
+// 获得歌单
+export function getDisc_list(id) {
+  return new Promise((resolve, reject) => {
+    axios.get('/playlist/detail', { params: { id: id } }).then(res => {
       resolve(res.data);
     })
   })

@@ -1,4 +1,4 @@
-import { get_Hotsinger } from "../common/js/axios";
+import { get_Hotsinger, getSOG_list } from "../common/js/axios";
 
 export default class Singer {
     constructor({ id, name, avatar, musicSize, albumSize, score }) {
@@ -28,6 +28,19 @@ export function get_singerList() {
         get_Hotsinger().then(res => {
             if (res.code == 200) {
                 resolve(res.list.artists);
+            }
+        })
+
+    })
+}
+
+
+export function getSingerDetail(id) {
+    return new Promise((resolve, reject) => {
+        getSOG_list(id).then(res => {
+           
+            if (res.code == 200) {
+                resolve(res);
             }
         })
 

@@ -5,7 +5,8 @@ import Rank from '../components/rank/rank';
 import Recommend from '../components/recommend/recommend';
 import Search from '../components/search/search';
 import Singer from '../components/singer/singer';
-// import Disc from '../components/disc';
+import Disc from '../components/disc/disc';
+import RankDetail from '../components/rank-detail/rank-detail';
 import SingerDetail from '../components/singer-detail/singer-detail';
 
 
@@ -19,12 +20,12 @@ const routes = [
   {
     path: '/recommend',
     component: Recommend,
-    // children: [
-    //   {
-    //     path: ':id',
-    //     component: Disc
-    //   }
-    // ]
+    children: [
+      {
+        path: ':id',
+        component: Disc
+      }
+    ]
   },
   {
     path: '/singer',
@@ -39,6 +40,12 @@ const routes = [
   {
     path: '/rank',
     component: Rank,
+    children: [
+      {
+        path: ':id',
+        component: RankDetail
+      }
+    ]
   },
   {
     path: '/search',
