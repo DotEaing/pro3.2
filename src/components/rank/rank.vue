@@ -112,8 +112,6 @@ export default {
   },
   created() {
     this._get_RANK();
-
-    console.log(Toplist);
   }
 };
 </script>
@@ -130,7 +128,6 @@ export default {
     align-items: center;
     justify-content: flex-start;
     padding: 8px 15px;
-   
 
     &:first-child {
       padding-top: 15px;
@@ -152,7 +149,7 @@ export default {
 
         .icon {
           width: 15px;
-          padding-right 5px
+          padding-right: 5px;
 
           img {
             width: 100%;
@@ -161,11 +158,11 @@ export default {
         }
 
         .topSong {
-          font-size: $font-size-small
+          font-size: $font-size-small;
 
           .song {
-            width 12rem
-            color $color-text-l
+            width: 12rem;
+            color: $color-text-l;
             padding-bottom: 12px;
           }
         }

@@ -302,6 +302,7 @@ export default {
     // 歌曲报错
     error() {
       this.songReady = true;
+      this.next()
     },
     // 提交时间
     updateTime(e) {

@@ -83,3 +83,28 @@ export function getDisc_list(id) {
     })
   })
 }
+
+// 热搜列表
+export function getSEACH_word() {
+  return new Promise((resolve, reject) => {
+    axios.get('/search/hot').then(res => {
+      resolve(res.data);
+    })
+  })
+}
+// 默认搜索关键词
+export function getSEACH_default() {
+  return new Promise((resolve, reject) => {
+    axios.get('/search/default').then(res => {
+      resolve(res.data);
+    })
+  })
+}
+// 搜索
+export function getSEACH_con(keywords, limit , offset, type) {
+  return new Promise((resolve, reject) => {
+    axios.get('/search', { params: { keywords: keywords, limit : limit, offset: offset, type: type } }).then(res => {
+      resolve(res.data);
+    })
+  })
+}

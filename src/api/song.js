@@ -45,7 +45,7 @@ export function createSong(musicData) {
 }
 
 
- function get_songUrl(id) {
+function get_songUrl(id) {
   let tt = []
   getSOG_url(id).then(res => {
     if (res.code == 200) {

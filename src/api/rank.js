@@ -17,12 +17,9 @@ export function get_RANK() {
                 }
                 getDiscDetail(t.id).then((t) => {
                     obj.topSong.push(...t)
-                    
                     // console.log(Toplist);
                 })
                 Toplist.push(obj)
-           
-
             });
         }
     })
@@ -38,15 +35,15 @@ function getDiscDetail(id) {
                 let tt = res.playlist.tracks.splice(0, 3)
                 let jj = []
                 let obj
-                tt.forEach((t)=>{
-                     obj = {
+                tt.forEach((t) => {
+                    obj = {
                         name: t.name,
                         singer: filterSinger(t.ar)
                     }
                     jj.push(obj)
                 })
                 resolve(jj);
-                
+
             }
         })
 

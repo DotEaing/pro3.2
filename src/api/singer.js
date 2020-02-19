@@ -6,8 +6,8 @@ export default class Singer {
         this.name = name
         this.avatar = `${avatar}?param=250y250`
         this.musicSize = musicSize,
-        this.albumSize = albumSize,
-        this.score = score
+            this.albumSize = albumSize,
+            this.score = score
     }
 }
 
@@ -38,7 +38,7 @@ export function get_singerList() {
 export function getSingerDetail(id) {
     return new Promise((resolve, reject) => {
         getSOG_list(id).then(res => {
-           
+
             if (res.code == 200) {
                 resolve(res);
             }
