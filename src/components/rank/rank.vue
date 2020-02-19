@@ -1,28 +1,35 @@
 <template>
   <div class="rank">
-    <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
-      <div class="box" v-for="(item,index) in rank" :key="index" @click="selectRank(item)">
-        <div class="title">
-          <van-image width="100" height="100" :src="item.avatar" />
-        </div>
+    <div v-show="this.show">
+      <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+        <div class="box" v-for="(item,index) in rank" :key="index" @click="selectRank(item)">
+          <div class="title">
+            <van-image width="100" height="100" :src="item.avatar" />
+          </div>
 
-        <div class="txt" >
-          <span class="name">{{item.name}}</span>
-          <div>
-            <img src="./first.png" alt srcset />
-            <!-- {{`${item.topSong[0].name}--${item.topSong[0].singer}`}} -->
-          </div>
-          <div>
-            <img src="./second.png" alt />
-            <!-- {{`${item.topSong[1]}`}} -->
-          </div>
-          <div>
-            <img src="./third.png" alt />
-            <!-- {{`${item.topSong[2]}`}} -->
+          <div class="txt">
+            <span class="name">{{item.name}}</span>
+            <div class="msg">
+              <div class="icon">
+                <img src="./first.png" alt />
+                <br />
+                <img src="./second.png" alt />
+                <br />
+                <img src="./third.png" alt />
+                <br />
+              </div>
+              <div class="topSong">
+                <div
+                  class="van-ellipsis song"
+                  v-for="(tt,index) of item.topSong"
+                  :key="index"
+                >{{`${tt.name}--${tt.singer}`}}</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </van-list>
+      </van-list>
+    </div>
     <transition name="slide">
       <router-view></router-view>
     </transition>
@@ -43,17 +50,14 @@ export default {
       finished: false
     };
   },
+  computed: {
+    ...mapGetters(["show"])
+  },
   methods: {
     _get_RANK() {
       get_RANK();
+      this.getTop();
     },
-    // computed: {
-    //   first() {
-    //     return;
-    //   },
-    //   second() {},
-    //   third() {}
-    // },
 
     getTop() {
       Toplist.forEach(t => {
@@ -63,8 +67,7 @@ export default {
               name: y.name,
               singer: filterSinger(y.ar)
             };
-            
-            Toplist.topSong.push(obj);
+            t.topSong.push(obj);
           });
         });
       });
@@ -109,7 +112,7 @@ export default {
   },
   created() {
     this._get_RANK();
-    this.getTop();
+
     console.log(Toplist);
   }
 };
@@ -127,6 +130,7 @@ export default {
     align-items: center;
     justify-content: flex-start;
     padding: 8px 15px;
+   
 
     &:first-child {
       padding-top: 15px;
@@ -143,13 +147,27 @@ export default {
         display: block;
       }
 
-      div {
-        padding-bottom: 5px;
-        color: $color-text-l;
-        font-size: 10px;
+      .msg {
+        display: flex;
 
-        img {
+        .icon {
           width: 15px;
+          padding-right 5px
+
+          img {
+            width: 100%;
+            padding-bottom: 5px;
+          }
+        }
+
+        .topSong {
+          font-size: $font-size-small
+
+          .song {
+            width 12rem
+            color $color-text-l
+            padding-bottom: 12px;
+          }
         }
       }
     }

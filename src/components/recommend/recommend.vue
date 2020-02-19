@@ -1,6 +1,6 @@
 <template>
-  <div class="recommend">
-    <div>
+  <div>
+    <div class="recommend" v-show="this.show">
       <div>
         <van-swipe :autoplay="4000" indicator-color="#ffcd32">
           <van-swipe-item v-for="(image, index) in banners_con" :key="index">
@@ -28,11 +28,10 @@
           </div>
         </van-list>
       </div>
-
-      <transition name="slide">
-        <router-view></router-view>
-      </transition>
     </div>
+    <transition name="slide">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -53,6 +52,9 @@ export default {
       loading: false,
       finished: false
     };
+  },
+  computed: {
+    ...mapGetters(["show"])
   },
   methods: {
     // 获得轮播
@@ -92,7 +94,7 @@ export default {
     },
     selectDisc(disc) {
       this.$router.push({
-        path: `/recommend/'${disc.id}`
+        path: `/recommend/${disc.id}`
       });
       this.setDisc(disc);
       this.setShow();

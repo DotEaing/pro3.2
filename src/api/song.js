@@ -9,7 +9,7 @@ export default class Song {
     this.name = name
     this.album = album
     this.duration = duration
-    this.image = `${image} ? param = 250y250`
+    this.image = `${image}?param=250y250`
     this.url = url
   }
 
@@ -18,7 +18,7 @@ export default class Song {
       return Promise.resolve(this.lyric)
     }
     return new Promise((resolve, reject) => {
-      getLyric(this.mid).then((res) => {
+      getSOG_lyric(this.id).then((res) => {
         if (res.code === 200) {
           this.lyric = res.lrc.lyric
           resolve(this.lyric)

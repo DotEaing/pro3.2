@@ -7,7 +7,7 @@
           <i>{{index+1}}</i>
         </div>
 
-        <van-image width="100" height="100" :src="item.avatar" />
+        <van-image width="95" height="95" :src="item.avatar" />
 
         <div class="txt">
           <span class="name">{{item.name}}</span>
@@ -111,6 +111,7 @@ export default {
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
 @import '../../common/stylus/variable';
+.singer>>>.van-image__img{ border-radius: 5px}
 
 .singer {
   color: $color-theme;

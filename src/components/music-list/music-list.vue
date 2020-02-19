@@ -4,7 +4,7 @@
       <van-nav-bar :title="title" left-arrow @click-left="back" fixed />
       <div class="bg-image" :style="bgStyle" ref="bgImage">
         <div class="play-wrapper">
-          <div ref="playBtn" v-show="songs.length>0" class="play">
+          <div ref="playBtn" v-show="songs.length>0" class="play" @click="random">
             <i class="icon-play"></i>
             <span class="text">随机播放全部</span>
           </div>
@@ -13,7 +13,7 @@
       </div>
 
       <div class="bg-layer" ref="layer" :style="top"></div>
-      <div class="song-list-wrapper" ref="wrapper" :style="sreen_Height"></div>
+      <div class="song-list-wrapper" ref="SLwrapper" :style="sreen_Height"></div>
       <SongList
         class="SongList"
         :songs="songs"
@@ -28,8 +28,8 @@
 
 <script>
 import SongList from "../../base/song-list/song-list";
-import { prefixStyle } from "../../common/js/dom";
 import { mapActions, mapMutations, mapGetters } from "vuex";
+import { prefixStyle } from "../../common/js/dom";
 const RESERVED_HEIGHT = 40;
 const transform = prefixStyle("transform");
 // const backdrop = prefixStyle("backdrop-filter");
@@ -81,24 +81,9 @@ export default {
         document.documentElement.scrollTop ||
         document.body.scrollTop;
 
-      let zIndex = 0;
-      let translateY = Math.min(-this.minTransalteY, scrollTop);
-      this.$refs.wrapper.style[transform] = `translate3d(0,-${translateY}px,0)`;  //报错
+      this.scrollY = scrollTop;
 
-      // this.$refs.filter.style[backdrop] = `blur(${blur}px)`;
-
-      if (scrollTop > -this.minTransalteY) {
-        zIndex = 10;
-        this.$refs.bgImage.style.paddingTop = 0;
-        this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`;
-        this.$refs.playBtn.style.display = "none";
-      } else {
-        this.$refs.bgImage.style.paddingTop = "80%";
-        this.$refs.bgImage.style.height = 0;
-        this.$refs.playBtn.style.display = "";
-      }
-      // this.$refs.bgImage.style[transform] = `scale(${scale})`;
-      this.$refs.bgImage.style.zIndex = zIndex;
+      
     },
 
     ...mapActions(["selectPlay", "randomPlay"]),
@@ -117,6 +102,32 @@ export default {
     },
     ...mapGetters(["show"])
   },
+
+  watch: {
+    scrollY(newVal) {
+      let zIndex = 0;
+      let translateY = Math.min(-this.minTransalteY, newVal);
+      console.log(translateY);
+      
+      this.$refs.SLwrapper.style[
+        transform
+      ] =  `translate3d(0px,${-newVal}px,0px)`; //  不放在watch而饭在methods中会持续报错=>'style'undefined
+
+      if (newVal > -this.minTransalteY) {
+        zIndex = 10;
+        this.$refs.bgImage.style.paddingTop = 0;
+        this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`;
+        this.$refs.playBtn.style.display = "none";
+      } else {
+        this.$refs.bgImage.style.paddingTop = "80%";
+        this.$refs.bgImage.style.height = 0;
+        this.$refs.playBtn.style.display = "";
+      }
+ 
+      this.$refs.bgImage.style.zIndex = zIndex;
+    }
+  },
+
   mounted() {
     window.addEventListener("scroll", this.scroll);
 
@@ -145,6 +156,10 @@ export default {
 
 .music-list>>> [class*=van-hairline]::after {
   border: 0;
+}
+
+.music-list>>> .van-cell__label {
+  font-size: 12px;
 }
 
 .music-list {

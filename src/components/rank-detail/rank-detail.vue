@@ -27,7 +27,7 @@ export default {
     return {
       Songs: [],
       SingerMessage: []
-    };
+    }; 
   },
   methods: {
     _getDiscDetail() {
@@ -52,7 +52,7 @@ export default {
     }
   },
   created() {
-    this._getDiscDetail();
+    this._getDiscDetail()
   }
 };
 </script>

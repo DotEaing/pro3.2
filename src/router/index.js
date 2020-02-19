@@ -7,7 +7,7 @@ import Search from '../components/search/search';
 import Singer from '../components/singer/singer';
 import Disc from '../components/disc/disc';
 import RankDetail from '../components/rank-detail/rank-detail';
-import SingerDetail from '../components/singer-detail/singer-detail';
+import SingerDetail from '../components/singer-detail/singer-detail'; 
 
 
 Vue.use(VueRouter)

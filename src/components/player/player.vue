@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="playlist.length>0">
     <transition
       name="normal"
       @enter="enter"
@@ -51,13 +51,13 @@
             </div>
           </scroll>
         </div>
+
         <div class="bottom">
           <!-- 滑条 -->
           <div class="dot-wrapper">
             <span class="dot" :class="{'active':currentShow==='cd'}"></span>
             <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
           </div>
-
           <!-- 歌曲时间 -->
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
@@ -68,24 +68,20 @@
           </div>
           <!--  下方按键-->
           <div class="operators">
-            <div class="icon i-left" @click="changeMode">
+            <div @click="changeMode" class="icon i-left">
               <i :class="iconMode"></i>
             </div>
-            <div class="icon i-left" :class="disableCls">
+            <div class="icon i-left">
               <i @click="prev" class="icon-prev"></i>
             </div>
-            <div class="icon i-center" :class="disableCls">
+            <div class="icon i-center">
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right" :class="disableCls">
+            <div class="icon i-right">
               <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
-              <i
-                @click="toggleFavorite(currentSong)"
-                class="icon"
-                :class="getFavoriteIcon(currentSong)"
-              ></i>
+              <i class="icon icon-not-favorite"></i>
             </div>
           </div>
         </div>
@@ -106,7 +102,7 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control" @click.stop="showPlaylist">
+        <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
@@ -114,7 +110,7 @@
     <audio
       ref="audio"
       :src="currentSong.url"
-      @play="ready"
+      @canplay="ready"
       @error="error"
       @timeupdate="updateTime"
       @ended="end"
@@ -126,11 +122,16 @@
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import Lyric from "lyric-parser";
 import animations from "create-keyframe-animation";
+import { createSong } from "../../api/song";
 import ProgressBar from "../../base/progress-bar/progress-bar";
 import ProgressCircle from "../../base/progress-circle/progress-circle";
 import Scroll from "../../base/scroll/scroll";
-import { prefixStyle } from "../../common/js/dom";
 import { playMode } from "../../common/js/config";
+import { shuffle } from "../../common/js/util";
+import { prefixStyle } from "../../common/js/dom";
+const transform = prefixStyle("transform");
+const transitionDuration = prefixStyle("transitionDuration");
+
 export default {
   components: { ProgressBar, ProgressCircle, Scroll },
   data() {
@@ -214,15 +215,7 @@ export default {
     },
     // 暂停播放
     togglePlaying() {
-      if (!this.songReady) {
-        return;
-      }
-
       this.setPlayingState(!this.playing);
-      // 滚动歌词
-      if (this.currentLyric) {
-        this.currentLyric.togglePlay();
-      }
     },
     // 结束跳转
     end() {
@@ -246,7 +239,7 @@ export default {
       if (!this.songReady) {
         return;
       }
-      if (this.playlist.length === 1) {
+      if (this.playlist.length === 1 || this.mode === playMode.loop) {
         this.loop();
         return;
       } else {
@@ -266,7 +259,7 @@ export default {
       if (!this.songReady) {
         return;
       }
-      if (this.playlist.length === 1) {
+      if (this.playlist.length === 1 || this.mode === playMode.loop) {
         this.loop();
         return;
       } else {
@@ -281,10 +274,30 @@ export default {
       }
       this.songReady = false;
     },
+    // 修改模式
+    changeMode() {
+      const mode = (this.mode + 1) % 3;
+      this.setPlayMode(mode);
+      let list = null;
+      if (mode === playMode.random) {
+        list = shuffle(this.sequenceList);
+      } else {
+        list = this.sequenceList;
+      }
+      this.resetCurrentIndex(list);
+      this.setPlayList(list);
+    },
+    // 定位新列表中当前歌曲的位置
+    resetCurrentIndex(list) {
+      let index = list.findIndex(item => {
+        return item.id === this.currentSong.id;
+      });
+      this.setCurrentIndex(index);
+    },
     // 歌曲就绪
     ready() {
       this.songReady = true;
-      this.savePlayHistory(this.currentSong);
+      // this.savePlayHistory(this.currentSong);
     },
     // 歌曲报错
     error() {
@@ -420,11 +433,14 @@ export default {
       this.$refs.middleL.style[transitionDuration] = `${time}ms`;
       this.touch.initiated = false;
     },
-
     ...mapMutations({
-      setFullScreen: "SET_FULL_SCREEN"
-    }),
-    ...mapActions(["savePlayHistory"])
+      setFullScreen: "SET_FULL_SCREEN",
+      setPlayingState: "SET_PLAYING_STATE",
+      setCurrentIndex: "SET_CURRENT_INDEX",
+      setPlayMode: "SET_PLAY_MODE",
+      setPlayList: "SET_PLAYLIST"
+    })
+    // ...mapActions(["savePlayHistory"])
   },
   computed: {
     cdCls() {
@@ -442,14 +458,26 @@ export default {
     percent() {
       return this.currentTime / this.currentSong.duration;
     },
-    ...mapGetters(["currentIndex", "fullScreen", "playing"])
-  },
-  created() {
-    this.touch = {};
+    iconMode() {
+      return this.mode === playMode.sequence
+        ? "icon-sequence"
+        : this.mode === playMode.loop
+        ? "icon-loop"
+        : "icon-random";
+    },
+    ...mapGetters([
+      "currentSong",
+      "fullScreen",
+      "playing",
+      "playlist",
+      "currentIndex",
+      "sequenceList",
+      "mode"
+    ])
   },
   watch: {
     // 当前歌曲改变时
-     currentSong(newSong, oldSong) {
+    currentSong(newSong, oldSong) {
       if (!newSong.id) {
         return;
       }
@@ -483,11 +511,14 @@ export default {
         }, 20);
       }
     }
+  },
+  created() {
+    this.touch = {};
   }
 };
 </script>
 
-<style scoped lang="stylus" rel="stylesheet/stylus">
+<style lang="stylus" scoped>
 @import '../../common/stylus/variable';
 @import '../../common/stylus/mixin';
 
@@ -762,7 +793,7 @@ export default {
     bottom: 0;
     z-index: 180;
     width: 100%;
-    height: 60px;
+    height: 50px;
     background: $color-highlight-background;
 
     &.mini-enter-active, &.mini-leave-active {
