@@ -215,7 +215,15 @@ export default {
     },
     // 暂停播放
     togglePlaying() {
+      if (!this.songReady) {
+        return;
+      }
+
       this.setPlayingState(!this.playing);
+
+      if (this.currentLyric) {
+        this.currentLyric.togglePlay();
+      }
     },
     // 结束跳转
     end() {
@@ -302,7 +310,10 @@ export default {
     // 歌曲报错
     error() {
       this.songReady = true;
-      this.next()
+      this.$toast("抱歉哦，没有版权！");
+      setTimeout(() => {
+        this.next();
+      }, 1500);
     },
     // 提交时间
     updateTime(e) {
@@ -356,7 +367,8 @@ export default {
     },
     //调节歌词位置
     handleLyric({ lineNum, txt }) {
-      this.currentLineNum = lineNum;
+      this.currentLineNum = lineNum + 1;
+
       if (lineNum > 5) {
         let lineEl = this.$refs.lyricLine[lineNum - 5];
         this.$refs.lyricList.scrollToElement(lineEl, 1000);
@@ -425,6 +437,7 @@ export default {
           opacity = 0;
         }
       }
+
       const time = 300;
       this.$refs.lyricList.$el.style[
         transform

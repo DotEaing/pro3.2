@@ -1,8 +1,8 @@
 <template>
   <div class="search">
-    <van-search v-model="query_con" shape="round" background="#222" :placeholder="this.default" />
+    <van-search v-model="query" shape="round" background="#222" :placeholder="this.default" />
 
-    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
+    <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query_con">
       <div class="shortcut">
         <div class="hot-key">
           <h1 class="title">热门搜索</h1>
@@ -20,8 +20,8 @@
       </div>
     </div>
 
-    <div class="search-result" v-show="query" ref="searchResult">
-      <suggest ref="suggest" :query="query"></suggest>
+    <div class="search-result" v-show="query_con" ref="searchResult">
+      <suggest ref="suggest" :query="query_con"></suggest>
     </div>
   </div>
 </template>
@@ -40,6 +40,7 @@ export default {
       hotKey: []
     };
   },
+
   methods: {
     _getSEACH_word() {
       getSEACH_word().then(res => {
@@ -58,22 +59,26 @@ export default {
 
     addQuery(key) {
       this.query = key;
+    },
+
+    change_query_con(key) {
+      this.query_con = key;
     }
   },
-  // watch: {
-  //   query_con(newQuery) {
-  //     console.log(newQuery);
 
-  //     debounce(newQuery => {
-  //       console.log("1");
-
-  //       this.query = newQuery;
-  //     }, 200);
-  //   }
-  // },
+  watch: {
+    query(newQuery) {}
+  },
   created() {
     this._getSEACH_word();
     this._getSEACH_default();
+
+    this.$watch(
+      "query",
+      debounce(newQuery => {
+        this.change_query_con(newQuery);
+      }, 200)
+    );
   }
 };
 </script>

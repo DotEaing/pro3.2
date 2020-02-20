@@ -107,7 +107,6 @@ export default {
     scrollY(newVal) {
       let zIndex = 0;
       let translateY = Math.min(-this.minTransalteY, newVal);
-      console.log(translateY);
       
       this.$refs.SLwrapper.style[
         transform

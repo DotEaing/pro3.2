@@ -69,61 +69,51 @@ export default {
       this.hasMore = true;
       this.$refs.suggest.scrollTo(0, 0);
       getSEACH_con(key, perpage, this.page, 1).then(res => {
-        if (res.code === 200) {
-          this.result = this._genResult(res.result);
-
-          this._checkMore(res.result);
+        if (res.code === 200 && res.result.songCount > 0) {
+          this.result = this._genResult(res);
         }
+        this._checkMore(res);
       });
     },
     searchMore() {
       if (!this.hasMore) {
         return;
       }
-      this.page++;
-
-      search(this.query, this.page, this.showSinger, perpage).then(res => {
+      this.page += perpage;
+      getSEACH_con(this.query, perpage, this.page, 1).then(res => {
         if (res.code === 200) {
-          this.result = this.result.concat(this._genResult(res.result));
-          this._checkMore(res.data);
+          this.result = this.result.concat(this._genResult(res));
+          this._checkMore(res);
         }
       });
     },
     listScroll() {
       this.$emit("listScroll");
     },
+
     selectItem(item) {
-      if (item.type === TYPE_SINGER) {
-        const singer = new Singer({
-          id: item.singermid,
-          name: item.singername
-        });
-        this.$router.push({
-          path: `/search/${singer.id}`
-        });
-        this.setSinger(singer);
-      } else {
-        this.insertSong(item);
-      }
+      this.insertSong(item);
       this.$emit("select", item);
     },
+
     getDisplayName(item) {
       return `${item.name}-${item.singer}`;
     },
 
     _genResult(data) {
 
-      let ret = [];
-      data.songs.forEach(t => {
-        t.ar = t.artists;
-        t.al = t.album;
-        t.dt = t.duration;
-        t.al.picUrl = t.album.artist.img1v1Url;
-      });
+      if (data.code == 200) {
+        let ret = [];
 
-      ret = ret.concat(this._normalizeSongs(data.songs));
-
-      return ret;
+        data.result.songs.forEach(t => {
+          t.ar = t.artists;
+          t.al = t.album;
+          t.dt = t.duration;
+          t.al.picUrl = t.album.artist.img1v1Url;
+        });
+        ret = ret.concat(this._normalizeSongs(data.result.songs));
+        return ret;
+      }
     },
 
     _normalizeSongs(list) {
@@ -138,9 +128,12 @@ export default {
     },
 
     _checkMore(data) {
-      const song = data.songs;
-
-      if (!song.length || 100 > this.result.length) {
+      const song = data.result.songs;
+      if (data.result.songCount == 0) {
+        this.result.length = 0;
+        this.hasMore = false;
+      }
+      if (100 < this.result.length || this.result.length < 20) {
         this.hasMore = false;
       }
     },
@@ -152,6 +145,7 @@ export default {
 
   watch: {
     query(newQuery) {
+      this.result.length = 0;
       this.search(newQuery);
     }
   },
