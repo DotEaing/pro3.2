@@ -36,7 +36,7 @@ import Loading from "../../base/loading/loading";
 import NoResult from "../../base/no-result/no-result";
 // import { search } from "api/search";
 import { ERR_OK } from "../../api/config";
-import { createSong } from "../../api/song";
+import { createSong ,getAL_face} from "../../api/song";
 import { mapMutations, mapActions } from "vuex";
 // import Singer from "common/js/singer";
 import { getSEACH_con } from "../../common/js/axios";
@@ -65,6 +65,9 @@ export default {
       this.$refs.suggest.refresh();
     },
     search(key) {
+      if (key == "") {
+        return
+      }
       this.page = 0;
       this.hasMore = true;
       this.$refs.suggest.scrollTo(0, 0);
@@ -101,15 +104,14 @@ export default {
     },
 
     _genResult(data) {
-
       if (data.code == 200) {
         let ret = [];
 
         data.result.songs.forEach(t => {
+          
           t.ar = t.artists;
           t.al = t.album;
           t.dt = t.duration;
-          t.al.picUrl = t.album.artist.img1v1Url;
         });
         ret = ret.concat(this._normalizeSongs(data.result.songs));
         return ret;

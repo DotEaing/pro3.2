@@ -108,3 +108,12 @@ export function getSEACH_con(keywords, limit , offset, type) {
     })
   })
 }
+
+// 获得专辑
+export function getAL_mag(id) {
+  return new Promise((resolve, reject) => {
+    axios.get('/album', { params: { id: id } }).then(res => {
+      resolve(res.data);
+    })
+  })
+}

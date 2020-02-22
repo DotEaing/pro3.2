@@ -25,9 +25,7 @@ export default {
     bgImage() {
       return this.singer.avatar;
     },
-       ...mapGetters([
-        'singer',
-      ])
+    ...mapGetters(["singer"])
   },
   methods: {
     _getSingerDetail() {
@@ -37,8 +35,7 @@ export default {
         getSingerDetail(this.singer.id).then(res => {
           for (var tt of this._normalizeSong(res.hotSongs)) {
             this.hotSongs.push(tt);
-          };
-          
+          }
         });
       }
     },
@@ -49,6 +46,7 @@ export default {
         let musicData = item;
         ret.push(createSong(musicData));
       });
+
       return ret;
     }
   },

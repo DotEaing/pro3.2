@@ -17,21 +17,34 @@
             </li>
           </ul>
         </div>
+        <div class="search-history" v-show="searchHistory.length">
+          <h1 class="title">
+            <span class="text">搜索历史</span>
+            <span class="clear" @click="showConfirm">
+              <i class="icon-clear"></i>
+            </span>
+          </h1>
+          <search-list :searches="searchHistory" @delete="deleteOne" @select="addQuery"></search-list>
+        </div>
       </div>
     </div>
 
     <div class="search-result" v-show="query_con" ref="searchResult">
-      <suggest ref="suggest" :query="query_con"></suggest>
+      <suggest ref="suggest" :query="query_con" @select="saveSearch"></suggest>
     </div>
+    <confirm ref="confirm" @confirm="clearSearchHistory" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
   </div>
 </template>
 
 <script>
 import { getSEACH_word, getSEACH_default } from "../../common/js/axios";
+import { mapGetters, mapActions } from "vuex";
 import { debounce } from "../../common/js/util";
 import suggest from "../suggest/suggest";
+import searchList from "../../base/search-list/search-list";
+import confirm from "../../base/confirm/confirm";
 export default {
-  components: { suggest },
+  components: { suggest, searchList, confirm },
   data() {
     return {
       query: "",
@@ -39,6 +52,9 @@ export default {
       default: "",
       hotKey: []
     };
+  },
+  computed: {
+    ...mapGetters(["searchHistory"])
   },
 
   methods: {
@@ -63,7 +79,25 @@ export default {
 
     change_query_con(key) {
       this.query_con = key;
-    }
+    },
+    saveSearch() {
+      this.saveSearchHistory(this.query);
+    },
+    deleteOne(item) {
+      this.deleteSearchHistory(item);
+    },
+    deleteAll() {
+      this.clearSearchHistory();
+    },
+    showConfirm() {
+      this.$refs.confirm.show();
+    },
+
+    ...mapActions([
+      "saveSearchHistory",
+      "deleteSearchHistory",
+      "clearSearchHistory"
+    ])
   },
 
   watch: {

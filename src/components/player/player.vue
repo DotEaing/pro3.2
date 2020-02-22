@@ -10,7 +10,7 @@
       <!-- 大播放器 -->
       <div class="normal-player" v-show="fullScreen">
         <div class="background">
-          <img width="100%" height="100%" :src="currentSong.image" />
+          <img width="100%" height="100%" :src="`${currentSong.image}?param=250y250`" />
         </div>
         <div class="top">
           <div class="back" @click="back">
@@ -29,14 +29,15 @@
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <div class="cd" :class="cdCls">
-                <img class="image" :src="currentSong.image" />
+                <img class="image" :src="`${currentSong.image}?param=250y250`" />
               </div>
             </div>
+          <!-- 小   歌词 -->
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric">{{playingLyric}}</div>
             </div>
           </div>
-          <!-- 小歌词 -->
+          <!-- 大歌词 -->
           <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
@@ -367,7 +368,7 @@ export default {
     },
     //调节歌词位置
     handleLyric({ lineNum, txt }) {
-      this.currentLineNum = lineNum + 1;
+      this.currentLineNum = lineNum;
 
       if (lineNum > 5) {
         let lineEl = this.$refs.lyricLine[lineNum - 5];
@@ -723,6 +724,7 @@ export default {
           flex: 0 0 30px;
           line-height: 30px;
           width: 30px;
+          padding-left:5px
 
           &.time-l {
             text-align: left;
