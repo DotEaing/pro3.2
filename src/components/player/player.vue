@@ -32,7 +32,7 @@
                 <img class="image" :src="`${currentSong.image}?param=250y250`" />
               </div>
             </div>
-          <!-- 小   歌词 -->
+            <!-- 小   歌词 -->
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric">{{playingLyric}}</div>
             </div>
@@ -103,11 +103,12 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <Playlist ref="playlist"></Playlist>
     <audio
       ref="audio"
       :src="currentSong.url"
@@ -130,11 +131,12 @@ import Scroll from "../../base/scroll/scroll";
 import { playMode } from "../../common/js/config";
 import { shuffle } from "../../common/js/util";
 import { prefixStyle } from "../../common/js/dom";
+import Playlist from "../playlist/playlist";
 const transform = prefixStyle("transform");
 const transitionDuration = prefixStyle("transitionDuration");
 
 export default {
-  components: { ProgressBar, ProgressCircle, Scroll },
+  components: { ProgressBar, ProgressCircle, Scroll, Playlist },
   data() {
     return {
       songReady: false,
@@ -448,6 +450,11 @@ export default {
       this.$refs.middleL.style[transitionDuration] = `${time}ms`;
       this.touch.initiated = false;
     },
+    // 列表
+    showPlaylist(){
+      this.$refs.playlist.show()
+    },
+
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
       setPlayingState: "SET_PLAYING_STATE",
@@ -724,7 +731,7 @@ export default {
           flex: 0 0 30px;
           line-height: 30px;
           width: 30px;
-          padding-left:5px
+          padding-left: 5px;
 
           &.time-l {
             text-align: left;

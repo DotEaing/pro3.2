@@ -3,30 +3,33 @@
     <van-search v-model="query" shape="round" background="#222" :placeholder="this.default" />
 
     <div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query_con">
-      <div class="shortcut">
-        <div class="hot-key">
-          <h1 class="title">热门搜索</h1>
-          <ul>
-            <li
-              @click="addQuery(item.first)"
-              class="item"
-              v-for="(item,index) in hotKey"
-              :key="index"
-            >
-              <span>{{item.first}}</span>
-            </li>
-          </ul>
+      <scroll class="shortcut" :data="shortcut" ref="shortcut">
+        <div>
+          <div class="hot-key">
+            <h1 class="title">热门搜索</h1>
+
+            <ul>
+              <li
+                @click="addQuery(item.first)"
+                class="item"
+                v-for="(item,index) in hotKey"
+                :key="index"
+              >
+                <span>{{item.first}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="search-history" v-show="searchHistory.length">
+            <h1 class="title">
+              <span class="text">搜索历史</span>
+              <span class="clear" @click="showConfirm">
+                <i class="icon-clear"></i>
+              </span>
+            </h1>
+            <search-list :searches="searchHistory" @delete="deleteOne" @select="addQuery"></search-list>
+          </div>
         </div>
-        <div class="search-history" v-show="searchHistory.length">
-          <h1 class="title">
-            <span class="text">搜索历史</span>
-            <span class="clear" @click="showConfirm">
-              <i class="icon-clear"></i>
-            </span>
-          </h1>
-          <search-list :searches="searchHistory" @delete="deleteOne" @select="addQuery"></search-list>
-        </div>
-      </div>
+      </scroll>
     </div>
 
     <div class="search-result" v-show="query_con" ref="searchResult">
@@ -43,8 +46,9 @@ import { debounce } from "../../common/js/util";
 import suggest from "../suggest/suggest";
 import searchList from "../../base/search-list/search-list";
 import confirm from "../../base/confirm/confirm";
+import scroll from "../../base/scroll/scroll";
 export default {
-  components: { suggest, searchList, confirm },
+  components: { suggest, searchList, confirm, scroll },
   data() {
     return {
       query: "",
@@ -54,6 +58,9 @@ export default {
     };
   },
   computed: {
+    shortcut() {
+      return this.hotKey.concat(this.searchHistory);
+    },
     ...mapGetters(["searchHistory"])
   },
 
@@ -101,7 +108,13 @@ export default {
   },
 
   watch: {
-    query(newQuery) {}
+    query_con(newQuery) {
+      if (!newQuery) {
+        setTimeout(() => {
+          this.$refs.shortcut.refresh();
+        }, 20);
+      }
+    }
   },
   created() {
     this._getSEACH_word();
