@@ -316,7 +316,7 @@ export default {
       this.$toast("抱歉哦，没有版权！");
       setTimeout(() => {
         this.next();
-      }, 1500);
+      }, 2000);
     },
     // 提交时间
     updateTime(e) {

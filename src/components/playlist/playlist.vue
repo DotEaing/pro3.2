@@ -6,13 +6,13 @@
           <h1 class="title">
             <i class="icon"></i>
             <span class="text"></span>
-            <span class="clear">
+            <span class="clear" @click="showConfirm()">
               <i class="icon-clear"></i>
             </span>
           </h1>
         </div>
         <Scroll class="list-content" :data="sequenceList" ref="listContent">
-          <ul>
+          <transition-group name="list" tag="ul">
             <li
               class="item"
               ref="listItem"
@@ -25,32 +25,34 @@
               <span class="like">
                 <i class="icon-not-favorite"></i>
               </span>
-              <span class="delete">
+              <span class="delete" @click.stop="deletOne(item)">
                 <i class="icon-delete"></i>
               </span>
             </li>
-          </ul>
+          </transition-group>
         </Scroll>
         <div class="list-operate">
-          <div class="add">
-            <i class="icon-add"></i>
-            <span class="text">添加歌曲到队列</span>
-          </div>
+          <!-- <div class="add"> -->
+            <!-- <i class="icon-add"></i> -->
+            <!-- <span class="text">添加歌曲到队列</span> -->
+          <!-- </div> -->
         </div>
         <div class="list-close" @click="hide()">
           <span>关闭</span>
         </div>
       </div>
+      <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
     </div>
   </transition>
 </template>
 
 <script type="text/ecmascript-6">
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import { playMode } from "../../common/js/config";
 import Scroll from "../../base/scroll/scroll";
+import Confirm from "../../base/confirm/confirm";
 export default {
-  components: { Scroll },
+  components: { Scroll, Confirm },
   data() {
     return {
       showFlag: false
@@ -96,10 +98,24 @@ export default {
 
       this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300);
     },
+    deletOne(item) {
+      this.deleteSong(item);
+      if (!this.playlist.length) {
+        this.hide();
+      }
+    },
+     showConfirm() {
+      this.$refs.confirm.show();
+    },
+    confirmClear() {
+      this.deleteSongList();
+      this.hide();
+    },
     ...mapMutations({
       setCurrentIndex: "SET_CURRENT_INDEX",
       setPlayingState: "SET_PLAYING_STATE"
-    })
+    }),
+    ...mapActions(["deleteSong",'deleteSongList'])
   },
   watch: {
     currentSong(newSong, oldSong) {
