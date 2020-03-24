@@ -108,6 +108,7 @@ export default {
   },
 
   watch: {
+    // 防抖
     query_con(newQuery) {
       if (!newQuery) {
         setTimeout(() => {

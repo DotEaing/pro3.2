@@ -112,7 +112,7 @@
     <audio
       ref="audio"
       :src="currentSong.url"
-      @canplay="ready"
+      @ play="ready"
       @error="error"
       @timeupdate="updateTime"
       @ended="end"
@@ -512,6 +512,7 @@ export default {
         this.playingLyric = "";
         this.currentLineNum = 0;
       }
+      
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.$refs.audio.play();
